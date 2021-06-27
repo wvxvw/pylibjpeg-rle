@@ -2,14 +2,14 @@ name: Run pytest
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, wvxvw/conda-build ]
   pull_request:
     branches: [ master ]
 
 jobs:
   pytest:
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 10
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
@@ -50,3 +50,10 @@ jobs:
         0 https://codecov.io/bash) || (sleep 30 && bash <(curl \
         --connect-timeout 10 --retry 10 --retry-max-time \
         0 https://codecov.io/bash))
+
+    - name: Build conda package
+      uses: s-weigand/setup-conda@v1
+      with:
+        conda-channels: wvxvw
+    - run: conda install conda-build setuptools-rust
+    - run: conda build -c wvxvw ./conda-pkg/
